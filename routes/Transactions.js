@@ -11,14 +11,6 @@ const algod_token = {
 router.post("/", async (req, res) => {
   try {
     const { price, mnemonic } = req.body;
-    /*
-        req.body will contain the lands details and all that
-    
-        then when the transaction creates successfully and its sent we do our logic
-        
-        
-    
-        */
 
     if (!price || !mnemonic) {
       return res.status(400).json({
@@ -96,5 +88,39 @@ router.post("/", async (req, res) => {
     });
   }
 });
+
+
+router.get("/account-balance", async (req, res) => {
+  try {
+    const { mnemonic } = req.body;
+
+    if ( !mnemonic) {
+      return res.status(400).json({
+        msg: "Missing Parameters",
+      });
+    }
+
+    let algodClient = new algosdk.Algodv2(
+      algod_token,
+      algod_server,
+      algod_port
+    );
+
+    var recoveredAccount = algosdk.mnemonicToSecretKey(mnemonic);
+
+    let accountInfo = await algodClient
+      .accountInformation(recoveredAccount.addr)
+      .do();
+      // return the users balance
+    res.json(accountInfo.amount)
+  
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      msg: "Internal Error",
+    });
+  }
+});
+
 
 module.exports = router;

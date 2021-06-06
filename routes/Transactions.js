@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
 });
 
 
-router.get("/account-balance", async (req, res) => {
+router.post("/account-balance", async (req, res) => {
   try {
     const { mnemonic } = req.body;
 
